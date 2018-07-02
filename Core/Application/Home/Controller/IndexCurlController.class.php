@@ -247,15 +247,17 @@ class IndexCurlController extends HomeController {
 		$charset_id =$cjconf['webcharset'];
 		$codesarr = C('WEBCHARSETS');
 		$webcharset = $codesarr[$charset_id];
-		preg_match('/<meta[^>]+charset="?([^>]*?)["|\']([^>]*)?\/?>/',$html,$match);//判断meta标签里的编码
+		/*preg_match('/<meta[^>]+charset="?([^>]*?)["|\']([^>]*)?\/?>/',$html,$match);//判断meta标签里的编码*/
+                preg_match('/<meta[^>]+charset=["|\']?([^"^\'^>]*)["|\']?([^>]+)?\/?>/',$html,$match);//判断meta标签里的编码
 		if($charset_id >0){
 			$index_title = iconv("utf-8",$webcharset."//TRANSLIT",$conf['WEB_INDEX_TITLE']);
 			$index_keywords = iconv("utf-8",$webcharset."//TRANSLIT",$conf['INDEX_KEYWORDS']);
 			$index_description = iconv("utf-8",$webcharset."//TRANSLIT",$conf['INDEX_DESCRIPTION']);		
 		}else{
 			/**处理meta标签编码与实际编码不符的情况**/
-            if(strtolower($match[1]) != 'utf-8'){
-				$html = preg_replace('/<meta[^>]+charset="?([^>]*?)["|\']([^>]*)?\/?>/','<meta charset="utf-8">',$html);
+                        if(strtolower($match[1]) != 'utf-8'){
+				/*$html = preg_replace('/<meta[^>]+charset="?([^>]*?)["|\']([^>]*)?\/?>/','<meta charset="utf-8">',$html);*/
+                                $html = preg_replace('/<meta[^>]+charset=["|\']?([^"^\'^>]*)["|\']?([^>]+)?\/?>/','<meta charset="utf-8">',$html);
 			}
 			$index_title = $conf['WEB_INDEX_TITLE'];
 			$index_keywords = $conf['INDEX_KEYWORDS'];
