@@ -291,6 +291,7 @@ class IndexQueryController extends HomeController
         if($usedtime<time()&&in_array($extension,array('','htm','html','shtml','jhtml'))){
             $content = R('Querylist/demo',array($geturl));
             $html = $this->replacHtml($weburl,$content,$filename);//替换
+            $html = \Home\Library\HtmlDomReplace::AppendNav($html);
             $res = $html;
             $this->createFile($filename,$html);//生成文件
         }else{
