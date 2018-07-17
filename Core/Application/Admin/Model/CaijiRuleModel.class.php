@@ -46,9 +46,13 @@ class CaijiRuleModel extends Model{
 
         /* 获取数据对象 */
         $data = $this->token(false)->create($data);
+//        print_r($data);
+//        print_r($this->xpathEncode($data));
+//        exit;
         if(empty($data)){
             return false;
         }
+
 
         /* 添加或新增基础内容 */
         if(empty($data['id'])){ //新增数据
@@ -74,6 +78,18 @@ class CaijiRuleModel extends Model{
         //内容添加或更新完成
         return $data;
     }
+    
+//    public function xpathEncode(&$data){
+//        $xpath = [];
+//        while(list($key,$val) = each($data)){
+//            if(substr($key, 0, 6) == 'xpath_'){
+//                $xpath[$key] = $val;
+//                unset($data[$key]);
+//            }
+//        }
+//        $data['xpath'] = json_encode($xpath);
+//        return $data;
+//    }
 
     /**
      * 生成标签过滤的值

@@ -77,10 +77,14 @@ class IndexQueryController extends HomeController
          * 判断文件是否存在,判断缓存设置
          * 如果不存在，css、js、图片直接下载，html要创建文件
         */
+        
         $hconfig = $this->getHconfig();
         if(file_exists($filename)){
             $html = file_get_contents($filename);
             if($hconfig['DIR_CACHE'] !='') $html = $this->updateCache($filename,$geturl,$weburl,$extension);
+//            $t = time();
+//            $html = \Home\Library\HtmlDomReplace::AppendNav($html);
+//            echo time()-$t;
             echo $html;
         }else{
             /*不同文件的处理方式不一样*/
@@ -101,6 +105,7 @@ class IndexQueryController extends HomeController
                 /*测试模式不缓存内容*/
                 if($code = $this->getHtmlCode($html))
                         header("Content-Type:text/html;charset=$code");
+                $html = \Home\Library\HtmlDomReplace::AppendNav($html);
                 echo $html;
                 if($action_model == 0) return;
                 $this->createFile($filename,$html);//生成文件
@@ -114,6 +119,7 @@ class IndexQueryController extends HomeController
                 //$html = R('Replace/act',array($content,$weburl));//替换
                 if($code = $this->getHtmlCode($html))
                         header("Content-Type:text/html;charset=$code");
+                $html = \Home\Library\HtmlDomReplace::AppendNav($html);
                 echo $html;
             }
         }
