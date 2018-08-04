@@ -131,6 +131,12 @@ class IndexCurlController extends HomeController {
 				}else{
 					$html = $this->nocache($geturl);
 				}
+                                if($code = self::getHtmlCode($html))
+                                        header("Content-Type:text/html;charset=$code");
+                                $html = \Home\Library\HtmlDomReplace::AppendNav($html);
+                                if(strtolower(trim($code))!='utf-8' && $code){
+                                    $html = mb_convert_encoding($html, $code,'utf-8');
+                                }
 			}elseif($extension == 'css'){
 				$filename = $csspath.parse_url($urlpath,PHP_URL_PATH);
 				//使用CSS缓存
@@ -164,9 +170,22 @@ class IndexCurlController extends HomeController {
 				}else{
 					$html = $this->nocache($geturl);
 				}
+                                if($code = self::getHtmlCode($html))
+                                        header("Content-Type:text/html;charset=$code");
+                                $html = \Home\Library\HtmlDomReplace::AppendNav($html);
+                                if(strtolower(trim($code))!='utf-8' && $code){
+                                    $html = mb_convert_encoding($html, $code,'utf-8');
+                                }
+                                
 			}else{
 				//$filename = $datapath.parse_url($urlpath,PHP_URL_PATH);
-				$html = $this->nocache($geturl);				
+				$html = $this->nocache($geturl);
+                                if($code = self::getHtmlCode($html))
+                                        header("Content-Type:text/html;charset=$code");
+                                $html = \Home\Library\HtmlDomReplace::AppendNav($html);
+                                if(strtolower(trim($code))!='utf-8' && $code){
+                                    $html = mb_convert_encoding($html, $code,'utf-8');
+                                }
 			}
 			return $html;
 		}

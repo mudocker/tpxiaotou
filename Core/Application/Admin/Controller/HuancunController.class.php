@@ -31,7 +31,7 @@ class HuancunController extends AdminController {
                 $Config->where($map)->setField(array('value'=>$value,'update_time'=>time()));
             }
         }
-		$this->createHconfig();
+        $this->createHconfig();
         $this->success('保存成功！');
     }
     //缓存格式转换

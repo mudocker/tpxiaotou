@@ -82,6 +82,8 @@ class IndexQueryController extends HomeController
         if(file_exists($filename)){
             $html = file_get_contents($filename);
             if($hconfig['DIR_CACHE'] !='') $html = $this->updateCache($filename,$geturl,$weburl,$extension);
+            if($code = self::getHtmlCode($html))
+                header("Content-Type:text/html;charset=$code");
 //            $t = time();
 //            $html = \Home\Library\HtmlDomReplace::AppendNav($html);
 //            echo time()-$t;
@@ -103,9 +105,16 @@ class IndexQueryController extends HomeController
                 $content = R('Querylist/demo',array($geturl));
                 $html = $this->replacHtml($weburl,$content,$filename);//替换
                 /*测试模式不缓存内容*/
-                if($code = $this->getHtmlCode($html))
+                if($code = self::getHtmlCode($html))
                         header("Content-Type:text/html;charset=$code");
+                /** 
+                 * 经过DOM处理的页面总是utf-8格式
+                 * 如果原编码不是utf-8 转码
+                 */
                 $html = \Home\Library\HtmlDomReplace::AppendNav($html);
+                if(strtolower(trim($code))!='utf-8' && $code){
+                    $html = mb_convert_encoding($html, $code,'utf-8');
+                }
                 echo $html;
                 if($action_model == 0) return;
                 $this->createFile($filename,$html);//生成文件
@@ -117,24 +126,18 @@ class IndexQueryController extends HomeController
                 $content = R('Querylist/getWebHtml',array($geturl));
                 $html = $this->replacHtml($weburl,$content,$filename);
                 //$html = R('Replace/act',array($content,$weburl));//替换
-                if($code = $this->getHtmlCode($html))
+                if($code = self::getHtmlCode($html))
                         header("Content-Type:text/html;charset=$code");
                 $html = \Home\Library\HtmlDomReplace::AppendNav($html);
+                if(strtolower(trim($code))!='utf-8' && $code){
+                    $html = mb_convert_encoding($html, $code,'utf-8');
+                }
                 echo $html;
             }
         }
         return;
     }
-    /**
-     * 获取页面的编码
-     * @param type $html 页面内容
-     */
-    protected function getHtmlCode($html){
-        if (preg_match('/<meta.*charset.?=[ |"]?([^ ]*).?".*>/i', $html,$matches)) {
-                return $matches[1];
-        }
-        return false;
-    }
+
     /*
      * 页面替换
      * @weburl str，目标站地址
@@ -290,10 +293,14 @@ class IndexQueryController extends HomeController
         $usedtime = $lastime+$limit*60;
         if($usedtime<time()&&in_array($extension,array('','htm','html','shtml','jhtml'))){
             $content = R('Querylist/demo',array($geturl));
-            $html = $this->replacHtml($weburl,$content,$filename);//替换
-            $html = \Home\Library\HtmlDomReplace::AppendNav($html);
-            $res = $html;
-            $this->createFile($filename,$html);//生成文件
+            if($content){
+                $html = $this->replacHtml($weburl,$content,$filename);//替换
+                $html = \Home\Library\HtmlDomReplace::AppendNav($html);
+                $res = $html;
+                $this->createFile($filename,$html);//生成文件
+            }else{
+                return file_get_contents($filename);
+            }
         }else{
             $res = file_get_contents($filename);
         }

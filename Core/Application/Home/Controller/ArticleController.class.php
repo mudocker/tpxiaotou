@@ -32,8 +32,14 @@ class ArticleController extends HomeController {
 		/* 模板赋值并渲染模板 */
 		$this->assign('category', $category);
 
-                echo \Home\Library\HtmlDomReplace::XpathArticleList($category,$p);
-                
+                $html = \Home\Library\HtmlDomReplace::XpathArticleList($category,$p);
+                if($code = self::getHtmlCode($html)){
+                    header("Content-Type:text/html;charset=$code");
+                    if(strtolower(trim($code))!='utf-8'){
+                        $html = mb_convert_encoding($html, $code,'utf-8');
+                    }
+                }
+                echo $html;
 //		$this->display($category['template_index']);
 	}
 
@@ -95,7 +101,14 @@ class ArticleController extends HomeController {
 //		$this->assign('category', $category);
 //		$this->assign('info', $info);
 //		$this->assign('page', $p); //页码
-                echo \Home\Library\HtmlDomReplace::XpathArticleDetail($info);
+                $html = \Home\Library\HtmlDomReplace::XpathArticleDetail($info);
+                if($code = self::getHtmlCode($html)){
+                    header("Content-Type:text/html;charset=$code");
+                    if(strtolower(trim($code))!='utf-8'){
+                        $html = mb_convert_encoding($html, $code,'utf-8');
+                    }
+                }
+                echo $html;
 //		$this->display($tmpl);
 	}
 

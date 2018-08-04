@@ -37,5 +37,16 @@ class HomeController extends Controller {
 		/* 用户登录检测 */
 		is_login() || $this->error('您还没有登录，请先登录！', U('User/login'));
 	}
+        
+    /**
+     * 获取页面的编码
+     * @param type $html 页面内容
+     */
+    protected static function getHtmlCode($html){
+        if (preg_match('/<meta.*charset.?=[ |"]?([^ ]*).?".*>/i', $html,$matches)) {
+                return $matches[1];
+        }
+        return false;
+    }
 
 }

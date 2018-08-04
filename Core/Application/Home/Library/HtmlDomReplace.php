@@ -32,7 +32,8 @@ class HtmlDomReplace {
         if($_config['xpath_enable'] != 1 || $_config['xpath_nav_article_category']==''){
             return $html;
         }
-        $document = \FluentDOM::load( $html,  'text/html' );
+        $document = \FluentDOM::load( $html,  'text/html' ); //,[\FluentDOM\Loader\Options::ENCODING => 'gb2312',\FluentDOM\Loader\Options::FORCE_ENCODING => 'gb2312']
+        
         if(!self::_documentAppendNav($document,$_config)){
             return $html;
         }
@@ -179,18 +180,23 @@ class HtmlDomReplace {
             ], $_config['xpath_list_row_type']);
             $listDom->appendXml($html);
         }
-        
-        $total =   $DocumentModel->count();
-        $pageDoms = $document($_config['xpath_list_pages']);
-        if($pageDoms->length){
-            $page = new \Think\Page($total, $category['list_row'], $REQUEST); 
-            if($total>$listRows){
-                $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
+        if($_config['xpath_list_pages']){
+            $total =   $DocumentModel->where(['category_id'=>$category['id']])->count();
+            $pageDoms = $document($_config['xpath_list_pages']);
+            if($pageDoms->length){
+                $page = new \Think\Page($total, $category['list_row'], $REQUEST); 
+                if($total>$listRows){
+                    $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
+                }
+                $p =$page->show();
+                $pageDom = $pageDoms[0];
+                $pageDom->nodeValue = '';
+                //$fd = new \FluentDOM\Nodes($p,  'text/html');
+                //echo $fd;exit;
+                //echo $fd->saveHTML();exit;
+                //\FluentDOM::load( $p,  'text/html') 
+                $pageDom->append(\FluentDOM::load( $p,  'text/html') );
             }
-            $p =$page->show();
-            $pageDom = $pageDoms[0];
-            $pageDom->nodeValue = '';
-            $pageDom->append( \FluentDOM::load( $p,  'text/html') );
         }
         return $document->saveHTML();
     }
