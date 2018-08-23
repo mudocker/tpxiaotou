@@ -1,3 +1,8 @@
+
+/otxghtgl2018.php
+administrator
+pax2017htgl
+
 #  编码正则匹配错误导致html修改异常
 
 Core\Application\Home\Controller
@@ -22,16 +27,4 @@ IndexQueryController 约103行
 
 增加方法 getHtmlCode($html);
 
-# 发布内容
-
-> 设置
-
-- 导航xpath
-- 页面模板网址
-- 页面内容xpath
-
-> 过滤Url (非镜像站网址)
-
-> 根据导航Xpath 添加导航
-> 获取缓存的模板 根据设置的xpath 替换内容
-
+http://l.cn/index.php?s=/IndexQuery/html/weburl/111

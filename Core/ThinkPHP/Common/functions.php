@@ -21,25 +21,22 @@
  * @return mixed
  */
 function C($name=null, $value=null,$default=null) {
-    static $_config = array();
+    static $_config = [];
     // 无参数时获取所有
-    if (empty($name)) {
-        return $_config;
-    }
+    if (empty($name)) return $_config;
+
     // 优先执行设置获取或赋值
     if (is_string($name)) {
         if (!strpos($name, '.')) {
             $name = strtoupper($name);
-            if (is_null($value))
-                return isset($_config[$name]) ? $_config[$name] : $default;
+            if (is_null($value)) return isset($_config[$name]) ? $_config[$name] : $default;
             $_config[$name] = $value;
             return null;
         }
         // 二维数组设置和获取支持
         $name = explode('.', $name);
         $name[0]   =  strtoupper($name[0]);
-        if (is_null($value))
-            return isset($_config[$name[0]][$name[1]]) ? $_config[$name[0]][$name[1]] : $default;
+        if (is_null($value)) return isset($_config[$name[0]][$name[1]]) ? $_config[$name[0]][$name[1]] : $default;
         $_config[$name[0]][$name[1]] = $value;
         return null;
     }
@@ -665,13 +662,10 @@ function R($url,$vars=array(),$layer='') {
     $module =   $info['dirname'];
     $class  =   A($module,$layer);
     if($class){
-        if(is_string($vars)) {
-            parse_str($vars,$vars);
-        }
+       is_string($vars) and  parse_str($vars,$vars);
         return call_user_func_array(array(&$class,$action.C('ACTION_SUFFIX')),$vars);
-    }else{
-        return false;
-    }
+    }else return false;
+
 }
 
 /**

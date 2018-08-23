@@ -29,10 +29,9 @@ class HtmlDomReplace {
      */
     public static function AppendNav($html){
         $_config = R('Loadconfig/config');
-        if($_config['xpath_enable'] != 1 || $_config['xpath_nav_article_category']==''){
-            return $html;
-        }
-        $document = \FluentDOM::load( $html,  'text/html' ); //,[\FluentDOM\Loader\Options::ENCODING => 'gb2312',\FluentDOM\Loader\Options::FORCE_ENCODING => 'gb2312']
+        if($_config['xpath_enable'] != 1 || $_config['xpath_nav_article_category']=='') return $html;
+
+        $document = \FluentDOM::load( $html,  'text/html' ,[\FluentDOM\Loader\Options::ENCODING => 'gb2312',\FluentDOM\Loader\Options::FORCE_ENCODING => 'gb2312']); //,[\FluentDOM\Loader\Options::ENCODING => 'gb2312',\FluentDOM\Loader\Options::FORCE_ENCODING => 'gb2312']
         
         if(!self::_documentAppendNav($document,$_config)){
             return $html;

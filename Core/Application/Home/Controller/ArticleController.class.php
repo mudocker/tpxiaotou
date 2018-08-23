@@ -75,9 +75,8 @@ class ArticleController extends HomeController {
 		/* 获取详细信息 */
 		$Document = D('Document');
 		$info = $Document->detail($id);
-		if(!$info){
-			$this->error($Document->getError());
-		}
+		if(!$info) $this->error($Document->getError());
+
 
 		/* 分类信息 */
 		$category = $this->category($info['category_id']);

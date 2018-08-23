@@ -65,13 +65,11 @@ use Common\Controller\Addon;
                 curl_close($ch);
             }
 
-            if(!empty($data) && strlen($data)<400 ){
-                $config['new_version'] = $data;
-            }
+            if(!empty($data) && strlen($data)<400 ) $config['new_version'] = $data;
+
 
             $this->assign('addons_config', $config);
-            if($config['display']){
-                $this->display('widget');
-            }
+            if($config['display']) $this->display('widget');
+
         }
     }

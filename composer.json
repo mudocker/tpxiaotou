@@ -10,5 +10,8 @@
         "psr-4": {
            "Home\\": "Core/Application/Home/"
         }
+    },
+    "config":{
+        "prefer-install":"install"
     }
 }

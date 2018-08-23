@@ -1,5 +1,61 @@
 [
     {
+        "name": "fluentdom/fluentdom",
+        "version": "7.0.0",
+        "version_normalized": "7.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/FluentDOM/FluentDOM.git",
+            "reference": "fda8452ef698d1ae644d3938513b33d9c3d86eb7"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/FluentDOM/FluentDOM/zipball/fda8452ef698d1ae644d3938513b33d9c3d86eb7",
+            "reference": "fda8452ef698d1ae644d3938513b33d9c3d86eb7",
+            "shasum": ""
+        },
+        "require": {
+            "ext-dom": "*",
+            "php": ">=7.0"
+        },
+        "suggest": {
+            "ext-xmlreader": "XMLReader, XML pull parser, read large XMLs",
+            "ext-xmlwriter": "XMLWriter, Write large XMLs",
+            "fluentdom/css-selector": "Allows to use css selectors."
+        },
+        "time": "2017-10-01T10:41:43+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "src/FluentDOM.php"
+            ],
+            "psr-4": {
+                "FluentDOM\\": "src/FluentDOM"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "FluentDOM Contributors",
+                "homepage": "https://github.com/FluentDOM/FluentDOM/contributors"
+            }
+        ],
+        "description": "A fluent api for the php dom extension.",
+        "homepage": "http://fluentdom.org",
+        "keywords": [
+            "XMLReader",
+            "XMLWriter",
+            "Xpath",
+            "dom",
+            "jquery",
+            "xml"
+        ]
+    },
+    {
         "name": "jaeger/curlmulti",
         "version": "1.0",
         "version_normalized": "1.0.0.0",
@@ -279,28 +335,30 @@
     },
     {
         "name": "php-curl-class/php-curl-class",
-        "version": "8.0.3",
-        "version_normalized": "8.0.3.0",
+        "version": "8.3.0",
+        "version_normalized": "8.3.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-curl-class/php-curl-class.git",
-            "reference": "4b19e0fa0278b45452164d3043057cccb4f750db"
+            "reference": "b5d9ec2120e4b27e4b2ec72fa9a302aa4e337fdf"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-curl-class/php-curl-class/zipball/4b19e0fa0278b45452164d3043057cccb4f750db",
-            "reference": "4b19e0fa0278b45452164d3043057cccb4f750db",
+            "url": "https://api.github.com/repos/php-curl-class/php-curl-class/zipball/b5d9ec2120e4b27e4b2ec72fa9a302aa4e337fdf",
+            "reference": "b5d9ec2120e4b27e4b2ec72fa9a302aa4e337fdf",
             "shasum": ""
         },
         "require": {
             "ext-curl": "*",
+            "ext-mbstring": "*",
             "php": ">=5.3"
         },
         "require-dev": {
+            "ext-gd": "*",
             "phpunit/phpunit": "*",
             "squizlabs/php_codesniffer": "*"
         },
-        "time": "2018-04-21T08:28:43+00:00",
+        "time": "2018-08-18T18:02:12+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -320,75 +378,25 @@
         "description": "PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.",
         "homepage": "https://github.com/php-curl-class/php-curl-class",
         "keywords": [
+            "API-Client",
             "api",
             "class",
             "client",
             "curl",
             "framework",
             "http",
-            "http client",
+            "http-client",
+            "http-proxy",
             "json",
             "php",
+            "php-curl",
+            "php-curl-library",
+            "proxy",
             "requests",
-            "rest",
             "restful",
-            "web service",
-            "xml"
-        ]
-    },
-    {
-        "name": "fluentdom/fluentdom",
-        "version": "7.0.0",
-        "version_normalized": "7.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/FluentDOM/FluentDOM.git",
-            "reference": "fda8452ef698d1ae644d3938513b33d9c3d86eb7"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/FluentDOM/FluentDOM/zipball/fda8452ef698d1ae644d3938513b33d9c3d86eb7",
-            "reference": "fda8452ef698d1ae644d3938513b33d9c3d86eb7",
-            "shasum": ""
-        },
-        "require": {
-            "ext-dom": "*",
-            "php": ">=7.0"
-        },
-        "suggest": {
-            "ext-xmlreader": "XMLReader, XML pull parser, read large XMLs",
-            "ext-xmlwriter": "XMLWriter, Write large XMLs",
-            "fluentdom/css-selector": "Allows to use css selectors."
-        },
-        "time": "2017-10-01T10:41:43+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "files": [
-                "src/FluentDOM.php"
-            ],
-            "psr-4": {
-                "FluentDOM\\": "src/FluentDOM"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "FluentDOM Contributors",
-                "homepage": "https://github.com/FluentDOM/FluentDOM/contributors"
-            }
-        ],
-        "description": "A fluent api for the php dom extension.",
-        "homepage": "http://fluentdom.org",
-        "keywords": [
-            "XMLReader",
-            "XMLWriter",
-            "Xpath",
-            "dom",
-            "jquery",
+            "web-scraper",
+            "web-scraping ",
+            "web-service",
             "xml"
         ]
     }

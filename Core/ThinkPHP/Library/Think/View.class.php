@@ -106,8 +106,8 @@ class View {
     public function fetch($templateFile='',$content='',$prefix='') {
         if(empty($content)) {
             $templateFile   =   $this->parseTemplate($templateFile);
-            // 模板文件不存在直接返回
-            if(!is_file($templateFile)) E(L('_TEMPLATE_NOT_EXIST_').':'.$templateFile);
+
+          !is_file($templateFile) and  E(L('_TEMPLATE_NOT_EXIST_').':'.$templateFile);                                    // 模板文件不存在直接返回
         }else{
             defined('THEME_PATH') or    define('THEME_PATH', $this->getThemePath());
         }
@@ -146,26 +146,20 @@ class View {
         $depr       =   C('TMPL_FILE_DEPR');
         $template   =   str_replace(':', $depr, $template);
 
-        // 获取当前模块
-        $module   =  MODULE_NAME;
-        if(strpos($template,'@')){ // 跨模块调用模版文件
-            list($module,$template)  =   explode('@',$template);
-        }
+
+        $module   =  MODULE_NAME;                                                                                           // 获取当前模块
+        if(strpos($template,'@')) list($module,$template)  =   explode('@',$template);                                  // 跨模块调用模版文件
+
         // 获取当前主题的模版路径
         defined('THEME_PATH') or    define('THEME_PATH', $this->getThemePath($module));
 
         // 分析模板文件规则
-        if('' == $template) {
-            // 如果模板文件名为空 按照默认规则定位
-            $template = CONTROLLER_NAME . $depr . ACTION_NAME;
-        }elseif(false === strpos($template, $depr)){
-            $template = CONTROLLER_NAME . $depr . $template;
-        }
+        if('' == $template)                         $template = CONTROLLER_NAME . $depr . ACTION_NAME;
+        elseif(false === strpos($template, $depr)) $template = CONTROLLER_NAME . $depr . $template;                           // 如果模板文件名为空 按照默认规则定位
+
         $file   =   THEME_PATH.$template.C('TMPL_TEMPLATE_SUFFIX');
-        if(C('TMPL_LOAD_DEFAULTTHEME') && THEME_NAME != C('DEFAULT_THEME') && !is_file($file)){
-            // 找不到当前主题模板的时候定位默认主题中的模板
-            $file   =   dirname(THEME_PATH).'/'.C('DEFAULT_THEME').'/'.$template.C('TMPL_TEMPLATE_SUFFIX');
-        }
+        if(C('TMPL_LOAD_DEFAULTTHEME') && THEME_NAME != C('DEFAULT_THEME') && !is_file($file)) $file   =   dirname(THEME_PATH).'/'.C('DEFAULT_THEME').'/'.$template.C('TMPL_TEMPLATE_SUFFIX');        // 找不到当前主题模板的时候定位默认主题中的模板
+
         return $file;
     }
 

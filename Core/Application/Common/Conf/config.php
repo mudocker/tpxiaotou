@@ -14,10 +14,9 @@
 return array(
     /* 模块相关配置 */
     'AUTOLOAD_NAMESPACE' => array('Addons' => ONETHINK_ADDON_PATH), //扩展模块列表
-    'DEFAULT_MODULE'     => 'Home',
-    'MODULE_DENY_LIST'   => array('Common','User','Admin','Install'),
+    'MODULE_DENY_LIST'   => array('Common','User','Install'),
     'MODULE_ALLOW_LIST'  => array('Home','Admin'),
-
+    'DEFAULT_MODULE'     => 'Home',
     /* 系统数据加密设置 */
     'DATA_AUTH_KEY' => 'rFi)qRE+1nz&JxGXtcQ<Olu{:|Wj=wp"}o_-MA[K', //默认数据加密KEY
 
@@ -26,27 +25,27 @@ return array(
     'USER_ADMINISTRATOR' => 1, //管理员用户ID
 
     /* URL配置 */
-    'URL_CASE_INSENSITIVE' => true, //默认false 表示URL区分大小写 true则表示不区分大小写
-    'URL_MODEL'            => 3, //URL模式
+    'URL_CASE_INSENSITIVE' => true,
+    'URL_MODEL'            => 3,
     'VAR_URL_PARAMS'       => '', // PATHINFO URL参数变量
     'URL_PATHINFO_DEPR'    => '/', //PATHINFO URL分割符
 
     /* 全局过滤配置 */
     'DEFAULT_FILTER' => '', //全局过滤函数
 
-    /* 数据库配置 */
-    'DB_TYPE'   => 'mysql', // 数据库类型
-    'DB_HOST'   => '127.0.0.1', // 服务器地址
-    'DB_NAME'   => str_replace(array('.','-'),array('_',''),$_SERVER['HTTP_HOST']), // 数据库名
-    'DB_USER'   => 'root', // 用户名
-    'DB_PWD'    => 'root',  // 密码
-    'DB_PORT'   => '3306', // 端口
-    'DB_PREFIX' => 'ot_', // 数据库表前缀
 
-    /* 文档模型配置 (文档模型核心配置，请勿更改) */
+    'DB_TYPE'   => 'mysql',
+    'DB_HOST'   => '127.0.0.1',
+    'DB_NAME'   => str_replace(['.','-'],['_',''],$_SERVER['HTTP_HOST']),
+    'DB_USER'   => 'root',
+    'DB_PWD'    => 'root',
+    'DB_PORT'   => '3306',
+    'DB_PREFIX' => 'ot_',
+
+
     'DOCUMENT_MODEL_TYPE' => array(2 => '主题', 1 => '目录', 3 => '段落'),
 	'WEBCHARSETS' => array('utf-8','gb2312','gbk','big5'),
-	'HOME_TEMPLATE'=> '../../../../static/template/home/classic/',//前台模板路径
+	///'HOME_TEMPLATE'=> '../../../../static/template/home/classic/',//前台模板路径
 	'TAG_REMARK' => '公用：
 TDK_title {$title}
 

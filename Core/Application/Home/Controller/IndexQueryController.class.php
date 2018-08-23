@@ -34,18 +34,12 @@ class IndexQueryController extends HomeController
         if($config['url_rewrite_on'] == 1) $parameter = get_url_before_rewrite($parameter,$config['url_rewrite_rules']);
         if($config['forcedurl'] == 1) $parameter = url_convert($parameter,1);
         $geturl = $weburl.$parameter;
-
         $geturl = preg_replace('/([^:])\/\//is','${1}/',$geturl);//处理url中的"//"
-
         $extension = get_extension($geturl);
         $filename = get_filepath($geturl);
-        /* 设置head信息 */
-        $content_type = get_ContentType($extension);
+        $content_type = get_ContentType($extension);                                                                               /* 设置head信息 */
         $content_type = $content_type?$content_type:'text/html';
         header('Content-Type: '.$content_type);
-        /*
-         * csss、js文件重命名过，需要分别处理
-         */
 
         switch($extension){
             case 'js':
@@ -59,34 +53,20 @@ class IndexQueryController extends HomeController
             default:
                 $filename = $filename;
         }
-        /*
-         * 二级域名处理
-         * http和https
-         */
 
-        if($config['subdomain']){
+        if($config['subdomain']){                                                                                                 //  二级域名处理
+
             $subdomain = check_subdomain($geturl,$config);
-            //$subdomain = 'http://'.$subdomain;
-            //$scheme = parse_url($subdomain, PHP_URL_SCHEME);
             $realurl = $geturl==$subdomain?$geturl:$subdomain;
             $geturl = $realurl;
         }
 
-        /**/
-        /*
-         * 判断文件是否存在,判断缓存设置
-         * 如果不存在，css、js、图片直接下载，html要创建文件
-        */
-        
+
         $hconfig = $this->getHconfig();
         if(file_exists($filename)){
             $html = file_get_contents($filename);
             if($hconfig['DIR_CACHE'] !='') $html = $this->updateCache($filename,$geturl,$weburl,$extension);
-            if($code = self::getHtmlCode($html))
-                header("Content-Type:text/html;charset=$code");
-//            $t = time();
-//            $html = \Home\Library\HtmlDomReplace::AppendNav($html);
-//            echo time()-$t;
+            $code = self::getHtmlCode($html) and  header("Content-Type:text/html;charset=$code");
             echo $html;
         }else{
             /*不同文件的处理方式不一样*/
@@ -94,7 +74,7 @@ class IndexQueryController extends HomeController
             /*程序运行模式，测试模式不下载文件*/
             $action_model = $webconfig['ACTION_MODEL'];
             if(in_array($extension,array('css','js'))){
-                $res = R('Querylist/demo',array($geturl));
+                $res = R('Querylist/demo',[$geturl]);
                 echo $res;
                 if($action_model == 1) $this->downloadFile($geturl,$weburl);
             }elseif(in_array($extension,array('jpg','gif','jpeg','png'))){
@@ -104,17 +84,12 @@ class IndexQueryController extends HomeController
             }elseif(in_array($extension,array('','htm','html','shtml','jhtml'))){
                 $content = R('Querylist/demo',array($geturl));
                 $html = $this->replacHtml($weburl,$content,$filename);//替换
-                /*测试模式不缓存内容*/
-                if($code = self::getHtmlCode($html))
-                        header("Content-Type:text/html;charset=$code");
-                /** 
-                 * 经过DOM处理的页面总是utf-8格式
-                 * 如果原编码不是utf-8 转码
-                 */
+
+               $code = self::getHtmlCode($html) and   header("Content-Type:text/html;charset=$code");
+
                 $html = \Home\Library\HtmlDomReplace::AppendNav($html);
-                if(strtolower(trim($code))!='utf-8' && $code){
-                    $html = mb_convert_encoding($html, $code,'utf-8');
-                }
+               strtolower(trim($code))!='utf-8' && $code and $html = mb_convert_encoding($html, $code,'utf-8');
+                header("Content-Type:text/html; charset=utf-8");
                 echo $html;
                 if($action_model == 0) return;
                 $this->createFile($filename,$html);//生成文件
@@ -125,13 +100,11 @@ class IndexQueryController extends HomeController
             }else{
                 $content = R('Querylist/getWebHtml',array($geturl));
                 $html = $this->replacHtml($weburl,$content,$filename);
-                //$html = R('Replace/act',array($content,$weburl));//替换
-                if($code = self::getHtmlCode($html))
-                        header("Content-Type:text/html;charset=$code");
+
+                if($code = self::getHtmlCode($html)) header("Content-Type:text/html;charset=$code");
                 $html = \Home\Library\HtmlDomReplace::AppendNav($html);
-                if(strtolower(trim($code))!='utf-8' && $code){
-                    $html = mb_convert_encoding($html, $code,'utf-8');
-                }
+                if(strtolower(trim($code))!='utf-8' && $code) $html = mb_convert_encoding($html, $code,'utf-8');
+
                 echo $html;
             }
         }
@@ -144,18 +117,11 @@ class IndexQueryController extends HomeController
      * @extension 文件扩展名,css、js、图片不用替换
      */
     public function replacHtml($weburl,$content,$filename){
-        /*$extension = get_extension($filename);
-        $array = array('css','js','jpg','jpeg','gif','png','pdf');
-        if(in_array($extension,$array)){
-            return $content;
-        }*/
         $html = R('Replace/act',array($content,$weburl));
-        //判断首页常用格式，并替换首页
         $indexArray = array('index.html','index.htm','index.shtml','default.htm','default.html','default.shtml');
-        if(dirname($filename) == './Runtime/Html' && in_array(basename($filename),$indexArray)){
-            $html = $this->replaceIndex($html);
-        }
-        //添加JS
+        if(dirname($filename) == './Runtime/Html' && in_array(basename($filename),$indexArray)) $html = $this->replaceIndex($html);
+
+        //加JS
         $html = preg_replace('/<body[^>]*?>/isU','$0'.PHP_EOL.'<script src="/base.js"></script>',$html);
         $html = str_replace(array('</body>','</BODY>'),'<div style="display:none"><script charset="utf-8" src="/js.js"></script></div>'.PHP_EOL.'</body>',$html);
         return $html;

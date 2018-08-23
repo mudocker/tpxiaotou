@@ -508,16 +508,14 @@ function A($name,$layer='',$level='') {
     static $_action = array();
     $layer  =   $layer? : C('DEFAULT_C_LAYER');
     $level  =   $level? : ($layer == C('DEFAULT_C_LAYER')?C('CONTROLLER_LEVEL'):1);
-    if(isset($_action[$name.$layer]))
-        return $_action[$name.$layer];
+    if(isset($_action[$name.$layer])) return $_action[$name.$layer];
     $class  =   parse_res_name($name,$layer,$level);
     if(class_exists($class)) {
         $action             =   new $class();
         $_action[$name.$layer]     =   $action;
         return $action;
-    }else {
-        return false;
-    }
+    }else return false;
+
 }
 
 /**
@@ -533,13 +531,10 @@ function R($url,$vars=array(),$layer='') {
     $module =   $info['dirname'];
     $class  =   A($module,$layer);
     if($class){
-        if(is_string($vars)) {
-            parse_str($vars,$vars);
-        }
+        is_string($vars) and parse_str($vars,$vars);
         return call_user_func_array(array(&$class,$action.C('ACTION_SUFFIX')),$vars);
-    }else{
-        return false;
-    }
+    }else return false;
+
 }
 
 /**

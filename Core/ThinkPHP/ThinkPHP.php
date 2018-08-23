@@ -81,9 +81,8 @@ if(!IS_CLI) {
             //CGI/FASTCGI模式下
             $_temp  = explode('.php',$_SERVER['PHP_SELF']);
             define('_PHP_FILE_',    rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/'));
-        }else {
-            define('_PHP_FILE_',    rtrim($_SERVER['SCRIPT_NAME'],'/'));
-        }
+        }else  define('_PHP_FILE_',    rtrim($_SERVER['SCRIPT_NAME'],'/'));
+
     }
     if(!defined('__ROOT__')) {
         $_root  =   rtrim(dirname(_PHP_FILE_),'/');
