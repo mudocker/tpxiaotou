@@ -95,13 +95,11 @@ class QuerylistController extends HomeController {
             $filename = str_replace(array($baseurl,'../','..\\'),'',$vo);
             $filepath = './Runtime/Html/css/';
             $randname = get_randname($filename,'css');//随机文件名
-            if(!is_dir($filepath)){
-                mkdir($filepath,0755,true);
-            }
+            !is_dir($filepath) and  mkdir($filepath,0755,true);
+
             $filename = $filepath . '/' . $randname;
-            if(!file_exists($filename)) {
-                $multi_curl->addDownload($vo, $filename);
-            }
+           !file_exists($filename) and  $multi_curl->addDownload($vo, $filename);
+
         }
         $multi_curl->start();
         return;

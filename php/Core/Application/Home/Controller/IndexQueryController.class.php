@@ -1,5 +1,6 @@
 <?php
 namespace Home\Controller;
+use Home\Controller\iq\html;
 use OT\DataDictionary;
 use \Curl\curl;
 /**
@@ -30,82 +31,62 @@ class IndexQueryController extends HomeController
     }
     //获取页面内容
     public function html($weburl,$parameter=''){
-        $config = $this->_config;
-        if($config['url_rewrite_on'] == 1) $parameter = get_url_before_rewrite($parameter,$config['url_rewrite_rules']);
-        if($config['forcedurl'] == 1) $parameter = url_convert($parameter,1);
-        $geturl = $weburl.$parameter;
-        $geturl = preg_replace('/([^:])\/\//is','${1}/',$geturl);//处理url中的"//"
-        $extension = get_extension($geturl);
-        $filename = get_filepath($geturl);
-        $content_type = get_ContentType($extension);                                                                               /* 设置head信息 */
-        $content_type = $content_type?$content_type:'text/html';
-        header('Content-Type: '.$content_type);
 
-        switch($extension){
-            case 'js':
-                $filename = str_replace(array($weburl,'../','..\\'),'',$geturl);
-                $filename = './Runtime/Html/js/'.get_randname($filename,'js');
-                break;
-            case 'css':
-                $filename = str_replace(array($weburl,'../','..\\'),'',$geturl);
-                $filename = './Runtime/Html/css/'.get_randname($filename,'css');
-                break;
-            default:
-                $filename = $filename;
+        if (true){
+            $config = $this->_config;
+            $config['url_rewrite_on'] == 1 && $parameter = get_url_before_rewrite($parameter,$config['url_rewrite_rules']);
+            $config['forcedurl'] == 1 and  $parameter = url_convert($parameter,1);
+            $geturl = $weburl.$parameter;
+            $geturl = preg_replace('/([^:])\/\//is','${1}/',$geturl);//处理url中的"//"
+            $extension = get_extension($geturl);
+            $filename = get_filepath($geturl);
+            $content_type = get_ContentType($extension);                                                                               /* 设置head信息 */
+            $content_type = $content_type?$content_type:'text/html';
+            header('Content-Type: '.$content_type);
         }
-
-        if($config['subdomain']){                                                                                                 //  二级域名处理
-
-            $subdomain = check_subdomain($geturl,$config);
-            $realurl = $geturl==$subdomain?$geturl:$subdomain;
-            $geturl = $realurl;
-        }
+        $html=  new html();
+        $html->getFileName($filename,$extension,$weburl,$geturl);
+        $html->getUrl($config,$geturl);
 
 
-        $hconfig = $this->getHconfig();
-        if(file_exists($filename)){
-            $html = file_get_contents($filename);
-            if($hconfig['DIR_CACHE'] !='') $html = $this->updateCache($filename,$geturl,$weburl,$extension);
-            $code = self::getHtmlCode($html) and  header("Content-Type:text/html;charset=$code");
-            echo $html;
-        }else{
-            /*不同文件的处理方式不一样*/
-            $webconfig = R('Loadconfig/webconfig');
-            /*程序运行模式，测试模式不下载文件*/
-            $action_model = $webconfig['ACTION_MODEL'];
-            if(in_array($extension,array('css','js'))){
-                $res = R('Querylist/demo',[$geturl]);
-                echo $res;
-                if($action_model == 1) $this->downloadFile($geturl,$weburl);
-            }elseif(in_array($extension,array('jpg','gif','jpeg','png'))){
-                $res = R('Querylist/demo',array($geturl));
-                echo $res;
-                if($action_model == 1) $this->downloadImg($geturl,$filename);
-            }elseif(in_array($extension,array('','htm','html','shtml','jhtml'))){
-                $content = R('Querylist/demo',array($geturl));
-                $html = $this->replacHtml($weburl,$content,$filename);//替换
 
-               $code = self::getHtmlCode($html) and   header("Content-Type:text/html;charset=$code");
+        if (true){
+            if(file_exists($filename)) $html->getCache($filename,$geturl,$weburl,$extension);
+            else{
 
-                $html = \Home\Library\HtmlDomReplace::AppendNav($html);
-               strtolower(trim($code))!='utf-8' && $code and $html = mb_convert_encoding($html, $code,'utf-8');
-                header("Content-Type:text/html; charset=utf-8");
-                echo $html;
-                if($action_model == 0) return;
-                $this->createFile($filename,$html);//生成文件
-                R('Querylist/getFileCss',array($html));//多线程下载css
-                R('Querylist/getFileImg',array($html));//多线程下载图片
-                R('Querylist/getFileJs',array($html));//多线程下载Js
-                return;
-            }else{
-                $content = R('Querylist/getWebHtml',array($geturl));
-                $html = $this->replacHtml($weburl,$content,$filename);
 
-                if($code = self::getHtmlCode($html)) header("Content-Type:text/html;charset=$code");
-                $html = \Home\Library\HtmlDomReplace::AppendNav($html);
-                if(strtolower(trim($code))!='utf-8' && $code) $html = mb_convert_encoding($html, $code,'utf-8');
+                if(in_array($extension,['css','js'])){
+                    $res = R('Querylist/demo',[$geturl]);
+                    echo $res;
+                    $action_model == 1 and  $this->downloadFile($geturl,$weburl);
+                }elseif(in_array($extension,array('jpg','gif','jpeg','png'))){
+                    $res = R('Querylist/demo',array($geturl));
+                    echo $res;
+                    $action_model == 1 and  $this->downloadImg($geturl,$filename);
+                }elseif(in_array($extension,array('','htm','html','shtml','jhtml'))){
+                    $content = R('Querylist/demo',array($geturl));
+                    $html = $this->replacHtml($weburl,$content,$filename);//替换
 
-                echo $html;
+                    $code = self::getHtmlCode($html) and   header("Content-Type:text/html;charset=$code");
+
+                    $html = \Home\Library\HtmlDomReplace::AppendNav($html);
+                    strtolower(trim($code))!='utf-8' && $code and $html = mb_convert_encoding($html, $code,'utf-8');
+                    header("Content-Type:text/html; charset=utf-8");
+                    echo $html;
+                    if($action_model == 0) return;
+                    $this->createFile($filename,$html);
+                    R('Querylist/getFileCss',[$html]);
+                    R('Querylist/getFileImg',[$html]);
+                    R('Querylist/getFileJs',[$html]);
+                    return;
+                }else{
+                    $content = R('Querylist/getWebHtml',[$geturl]);
+                    $html = $this->replacHtml($weburl,$content,$filename);
+                    $code = self::getHtmlCode($html) and  header("Content-Type:text/html;charset=$code");
+                    $html = \Home\Library\HtmlDomReplace::AppendNav($html);
+                    (strtolower(trim($code))!='utf-8' && $code) and $html = mb_convert_encoding($html, $code,'utf-8');
+                    echo $html;
+                }
             }
         }
         return;
@@ -255,21 +236,19 @@ class IndexQueryController extends HomeController
         if(!$dircache) return;
         $limit = $this->checkCacheTime($filename,$dircache);
         if($limit <= 0) return file_get_contents($filename);
-        $lastime = filemtime($filename);//上次更新时间
+        $lastime = filemtime($filename);
         $usedtime = $lastime+$limit*60;
-        if($usedtime<time()&&in_array($extension,array('','htm','html','shtml','jhtml'))){
-            $content = R('Querylist/demo',array($geturl));
+        if($usedtime<time()&&in_array($extension,['','htm','html','shtml','jhtml'])){
+            $content = R('Querylist/demo',[$geturl]);
             if($content){
                 $html = $this->replacHtml($weburl,$content,$filename);//替换
                 $html = \Home\Library\HtmlDomReplace::AppendNav($html);
                 $res = $html;
                 $this->createFile($filename,$html);//生成文件
-            }else{
-                return file_get_contents($filename);
-            }
-        }else{
-            $res = file_get_contents($filename);
-        }
+            }else return file_get_contents($filename);
+
+        }else $res = file_get_contents($filename);
+
         clearstatcache();
         return $res;
     }
