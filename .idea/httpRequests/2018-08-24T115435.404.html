@@ -1,0 +1,129 @@
+Error: 60: Peer certificate cannot be authenticated with given CA certificates: SSL certificate problem: unable to get local issuer certificate
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <title>系统发生错误</title>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html {
+            overflow-y: scroll;
+        }
+
+        body {
+            background: #fff;
+            font-family: '微软雅黑';
+            color: #333;
+            font-size: 16px;
+        }
+
+        img {
+            border: 0;
+        }
+
+        .error {
+            padding: 24px 48px;
+        }
+
+        .face {
+            font-size: 100px;
+            font-weight: normal;
+            line-height: 120px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 32px;
+            line-height: 48px;
+        }
+
+        .error .content {
+            padding-top: 10px
+        }
+
+        .error .info {
+            margin-bottom: 12px;
+        }
+
+        .error .info .title {
+            margin-bottom: 3px;
+        }
+
+        .error .info .title h3 {
+            color: #000;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .error .info .text {
+            line-height: 24px;
+        }
+
+        .copyright {
+            padding: 12px 48px;
+            color: #999;
+        }
+
+        .copyright a {
+            color: #000;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="error">
+    <p class="face">:(</p>
+    <h1>File source not allowed.</h1>
+    <div class="content">
+        <div class="info">
+            <div class="title">
+                <h3>错误位置</h3>
+            </div>
+            <div class="text">
+                <p>FILE: D:\all\php\xiaotou\php\vendor\fluentdom\fluentdom\src\FluentDOM\Loader\Options.php &#12288;LINE:
+                    166</p>
+            </div>
+        </div>
+        <div class="info">
+            <div class="title">
+                <h3>TRACE</h3>
+            </div>
+            <div class="text">
+                <p>#0 D:\all\php\xiaotou\php\vendor\fluentdom\fluentdom\src\FluentDOM\Loader\Html.php(52):
+                    FluentDOM\Loader\Options->isAllowed('is_file')<br/>
+                    #1 D:\all\php\xiaotou\php\vendor\fluentdom\fluentdom\src\FluentDOM\Loader\Libxml\Errors.php(26):
+                    FluentDOM\Loader\Html->FluentDOM\Loader\{closure}()<br/>
+                    #2 D:\all\php\xiaotou\php\vendor\fluentdom\fluentdom\src\FluentDOM\Loader\Html.php(70):
+                    FluentDOM\Loader\Libxml\Errors->capture(Object(Closure))<br/>
+                    #3 D:\all\php\xiaotou\php\vendor\fluentdom\fluentdom\src\FluentDOM\Loaders.php(103):
+                    FluentDOM\Loader\Html->load('', 'text/html', Array)<br/>
+                    #4 D:\all\php\xiaotou\php\vendor\fluentdom\fluentdom\src\FluentDOM.php(39):
+                    FluentDOM\Loaders->load('', 'text/html', Array)<br/>
+                    #5 D:\all\php\xiaotou\php\Core\Application\Home\Library\HtmlDomReplace.php(34): FluentDOM::load('',
+                    'text/html', Array)<br/>
+                    #6 D:\all\php\xiaotou\php\Core\Application\Home\Controller\iq\html.php(103):
+                    Home\Library\HtmlDomReplace::AppendNav('')<br/>
+                    #7 D:\all\php\xiaotou\php\Core\Application\Home\Controller\IndexQueryController.class.php(40):
+                    Home\Controller\iq\html->downHtml()<br/>
+                    #8 [internal function]: Home\Controller\IndexQueryController->html('https://www.cnb...', '')<br/>
+                    #9 D:\all\php\xiaotou\php\Core\ThinkPHP\Library\Think\App.class.php(154):
+                    ReflectionMethod->invokeArgs(Object(Home\Controller\IndexQueryController), Array)<br/>
+                    #10 D:\all\php\xiaotou\php\Core\ThinkPHP\Library\Think\App.class.php(194): Think\App::exec()<br/>
+                    #11 D:\all\php\xiaotou\php\Core\ThinkPHP\Library\Think\Think.class.php(120): Think\App::run()<br/>
+                    #12 D:\all\php\xiaotou\php\Core\ThinkPHP\ThinkPHP.php(96): Think\Think::start()<br/>
+                    #13 D:\all\php\xiaotou\php\static\index.php(23): require('D:\\all\\php\\xiao...')<br/>
+                    #14 {main}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="copyright">
+    <p><a title="官方网站" href="http://www.thinkphp.cn">ThinkPHP</a><sup>3.2.3beta</sup> { Fast & Simple OOP PHP Framework
+        } -- [ WE CAN DO IT JUST THINK ]</p>
+</div>
+</body>
+</html>

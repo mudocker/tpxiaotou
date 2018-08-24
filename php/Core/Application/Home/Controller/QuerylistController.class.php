@@ -36,7 +36,7 @@ class QuerylistController extends HomeController {
         $charset_id =$cjconf['webcharset'];
         $codesarr = C('WEBCHARSETS');
         $webcharset = $codesarr[$charset_id];
-        $rules = array();
+        $rules = [];
         $data = QueryList::Query($url,$rules,'',$webcharset,$webcharset)->getHtml($rel = false);
         return($data);
     }
@@ -55,7 +55,6 @@ class QuerylistController extends HomeController {
         }
         $curl->setTimeout(20);
         $curl->setUserAgent($this->userAgent);
-//        $curl->setHeader('X-Requested-With', 'XMLHttpRequest');
         $curl->setReferrer('https:/www.baidu.com/');
         $curl->get($url);
         if ($curl->error) {
@@ -172,9 +171,8 @@ class QuerylistController extends HomeController {
                 mkdir($filepath,0755,true);
             }
             $filename = $filepath . '/' . $randname;
-            if(!file_exists($filename)) {
-                $multi_curl->addDownload($vo,$filename );
-            }
+            if(!file_exists($filename)) $multi_curl->addDownload($vo,$filename );
+
         }
         $multi_curl->start();
         return;

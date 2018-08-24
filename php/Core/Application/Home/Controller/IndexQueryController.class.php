@@ -31,64 +31,14 @@ class IndexQueryController extends HomeController
     }
     //获取页面内容
     public function html($weburl,$parameter=''){
-
-        if (true){
-            $config = $this->_config;
-            $config['url_rewrite_on'] == 1 && $parameter = get_url_before_rewrite($parameter,$config['url_rewrite_rules']);
-            $config['forcedurl'] == 1 and  $parameter = url_convert($parameter,1);
-            $geturl = $weburl.$parameter;
-            $geturl = preg_replace('/([^:])\/\//is','${1}/',$geturl);//处理url中的"//"
-            $extension = get_extension($geturl);
-            $filename = get_filepath($geturl);
-            $content_type = get_ContentType($extension);                                                                               /* 设置head信息 */
-            $content_type = $content_type?$content_type:'text/html';
-            header('Content-Type: '.$content_type);
-        }
-        $html=  new html();
-        $html->getFileName($filename,$extension,$weburl,$geturl);
-        $html->getUrl($config,$geturl);
-
-
-
-        if (true){
-            if(file_exists($filename)) $html->getCache($filename,$geturl,$weburl,$extension);
-            else{
-
-
-                if(in_array($extension,['css','js'])){
-                    $res = R('Querylist/demo',[$geturl]);
-                    echo $res;
-                    $action_model == 1 and  $this->downloadFile($geturl,$weburl);
-                }elseif(in_array($extension,array('jpg','gif','jpeg','png'))){
-                    $res = R('Querylist/demo',array($geturl));
-                    echo $res;
-                    $action_model == 1 and  $this->downloadImg($geturl,$filename);
-                }elseif(in_array($extension,array('','htm','html','shtml','jhtml'))){
-                    $content = R('Querylist/demo',array($geturl));
-                    $html = $this->replacHtml($weburl,$content,$filename);//替换
-
-                    $code = self::getHtmlCode($html) and   header("Content-Type:text/html;charset=$code");
-
-                    $html = \Home\Library\HtmlDomReplace::AppendNav($html);
-                    strtolower(trim($code))!='utf-8' && $code and $html = mb_convert_encoding($html, $code,'utf-8');
-                    header("Content-Type:text/html; charset=utf-8");
-                    echo $html;
-                    if($action_model == 0) return;
-                    $this->createFile($filename,$html);
-                    R('Querylist/getFileCss',[$html]);
-                    R('Querylist/getFileImg',[$html]);
-                    R('Querylist/getFileJs',[$html]);
-                    return;
-                }else{
-                    $content = R('Querylist/getWebHtml',[$geturl]);
-                    $html = $this->replacHtml($weburl,$content,$filename);
-                    $code = self::getHtmlCode($html) and  header("Content-Type:text/html;charset=$code");
-                    $html = \Home\Library\HtmlDomReplace::AppendNav($html);
-                    (strtolower(trim($code))!='utf-8' && $code) and $html = mb_convert_encoding($html, $code,'utf-8');
-                    echo $html;
-                }
-            }
-        }
+        $html=  new html($this,$weburl,$parameter);
+        $html->getFileName();
+        $html->getUrl();
+        $html->getCache();
+        $html->downCssJs();
+        $html->downImg();
+        $html->downHtml();
+        $html->orElse();
         return;
     }
 
