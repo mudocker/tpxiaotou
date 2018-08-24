@@ -1,3 +1,11 @@
+GET http://l.cn/index.php?weburl=http://www.cnblogs.com/fangyinghua/p/7400328.html&s=/IndexQuery/html
+Accept: */*
+Cache-Control: no-cache
+
+<> 2018-08-24T120620.200.html
+
+###
+
 GET http://l.cn/index.php?weburl=https://www.cnblogs.com/fangyinghua/p/7400328.html&s=/IndexQuery/html
 Accept: */*
 Cache-Control: no-cache
