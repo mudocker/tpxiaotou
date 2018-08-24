@@ -39,7 +39,6 @@ class IndexQueryController extends HomeController
         $html->downImg();
         $html->downHtml();
         $html->orElse();
-
         return;
     }
 
