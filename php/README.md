@@ -27,4 +27,4 @@ IndexQueryController 约103行
 
 增加方法 getHtmlCode($html);
 
-http://l.cn/index.php?s=/IndexQuery/html/weburl/111
+http://l.cn/index.php?s=/IndexQuery/html/weburl=http://l.cn/1.html

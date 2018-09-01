@@ -33,9 +33,8 @@ abstract class FluentDOM {
    * @return \FluentDOM\DOM\Document
    */
   public static function load($source, string $contentType = 'text/xml', array $options = []): \FluentDOM\DOM\Document {
-    if (NULL === self::$_loader) {
-      self::$_loader = self::getDefaultLoaders();
-    }
+    if (NULL === self::$_loader) self::$_loader = self::getDefaultLoaders();
+
     $result = self::$_loader->load($source, $contentType, $options);
     return $result instanceof \DOMDocument ? $result : $result->getDocument();
   }
@@ -166,9 +165,8 @@ abstract class FluentDOM {
    * @codeCoverageIgnore
    */
   public static function getDefaultLoaders(): FluentDOM\Loaders {
-    if (!(self::$_defaultLoaders instanceof FluentDOM\Loaders)) {
-      self::$_defaultLoaders = new FluentDOM\Loaders(new FluentDOM\Loader\Standard());
-    }
+    if (!(self::$_defaultLoaders instanceof FluentDOM\Loaders)) self::$_defaultLoaders = new FluentDOM\Loaders(new FluentDOM\Loader\Standard());
+
     return self::$_defaultLoaders;
   }
 

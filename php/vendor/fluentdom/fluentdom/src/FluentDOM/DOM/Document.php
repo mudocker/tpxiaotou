@@ -303,14 +303,10 @@ namespace FluentDOM\DOM {
      * @return string
      */
     public function saveHTML($context = NULL): string {
-      if ($context instanceof \DOMDocumentFragment) {
-        $context = $context->childNodes;
-      }
+      $context instanceof \DOMDocumentFragment and  $context = $context->childNodes;
       if ($context instanceof \DOMNodeList) {
         $result = '';
-        foreach ($context as $node) {
-          $result .= parent::saveHTML($node);
-        }
+        foreach ($context as $node) $result .= parent::saveHTML($node);
         return $result;
       }
       if (NULL === $context) {
@@ -320,11 +316,7 @@ namespace FluentDOM\DOM {
         foreach ($this->childNodes as $node) {
           $textOnly = $textOnly && $node instanceof \DOMText;
           $elementCount += $node instanceof \DOMElement ? 1 : 0;
-          if ($node instanceof \DOMDocumentType) {
-            $result .= parent::saveXML($node);
-          } else {
-            $result .= parent::saveHTML($node);
-          }
+          $result .=  $node instanceof \DOMDocumentType?  parent::saveXML($node): parent::saveHTML($node);
         }
         return $textOnly || $elementCount > 1 ? $result : $result."\n";
       }

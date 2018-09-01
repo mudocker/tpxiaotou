@@ -23,12 +23,10 @@ const ONETHINK_ADDON_PATH = '../Core/Addons/';
  */
 function is_login(){
     $user = session('user_auth');
-    if (empty($user)) {
-        return 0;
-    } else {
-        return session('user_auth_sign') == data_auth_sign($user) ? $user['uid'] : 0;
-    }
-}
+    if (empty($user))  return 0;
+     else return session('user_auth_sign') == data_auth_sign($user) ? $user['uid'] : 0;
+  }
+
 
 /**
  * 检测当前用户是否为管理员

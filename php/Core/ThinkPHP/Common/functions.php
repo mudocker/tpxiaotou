@@ -668,6 +668,8 @@ function R($url,$vars=array(),$layer='') {
 
 }
 
+
+
 /**
  * 处理标签扩展
  * @param string $tag 标签名称

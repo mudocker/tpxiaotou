@@ -2,6 +2,8 @@
 namespace Home\Controller\iq;
 
 
+use Home\Controller\HomeController;
+
 class html extends Base
 {
 
@@ -13,8 +15,13 @@ class html extends Base
     public $config;
     public $exists=false;
 
+    /**
+     * @var Base
+     */
+    public $self;
     public function __construct($self,$weburl,$parameter)
     {
+        $this->self=$self;
         $this->config=$config = $self->_config;
 
         $config['url_rewrite_on'] == 1 && $parameter = get_url_before_rewrite($parameter,$config['url_rewrite_rules']);
@@ -68,11 +75,12 @@ class html extends Base
 
 
     function getCache(){
+        $self= & $this->self;
          if (!$this->exists) return;
-        $hconfig = $this->getHconfig();
+        $hconfig =  $self->getHconfig();
         $html = file_get_contents($this->filename);
-        $hconfig['DIR_CACHE'] !='' && $html = $this->updateCache($this->filename,$this->geturl,$this->weburl,$this->extension);
-        $code = self::getHtmlCode($html) and  header("Content-Type:text/html;charset=$code");
+        $hconfig['DIR_CACHE'] !='' && $html =$self->updateCache($this->filename,$this->geturl,$this->weburl,$this->extension);
+        $code = self::getHtmlCode($html) and  header("Content-Type:text/html;charset={$code}");
         echo $html;
         exit();
     }
@@ -98,17 +106,19 @@ class html extends Base
     function downHtml(){
       if ($this->isRet(['','htm','html','shtml','jhtml']))return;
         $content = R('Querylist/demo',[$this->geturl]);
-        $html = $this->replacHtml($this->weburl,$content,$this->filename);//替换
+        $html = $this->replacHtml($this->weburl,$content,$this->filename);
         $code = self::getHtmlCode($html) and   header("Content-Type:text/html;charset=$code");
-        $html = \Home\Library\HtmlDomReplace::AppendNav($html);
-        strtolower(trim($code))!='utf-8' && $code and $html = mb_convert_encoding($html, $code,'utf-8');
-        header("Content-Type:text/html; charset=utf-8");
-        echo $html;
-        if($this->action_model == 0) return;
-        $this->createFile($this->filename,$html);
+       $html = \Home\Library\HtmlDomReplace::AppendNav($html);
+
+     //   strtolower(trim($code))!='utf-8' && $code and $html = mb_convert_encoding($html, $code,'utf-8');
+      //  header("Content-Type:text/html; charset=utf-8");
         R('Querylist/getFileCss',[$html]);
         R('Querylist/getFileImg',[$html]);
         R('Querylist/getFileJs',[$html]);
+        echo $html;
+        if($this->action_model == 0) return;
+        $this->createFile($this->filename,$html);
+
         exit();
     }
 
@@ -121,7 +131,7 @@ class html extends Base
         $code = self::getHtmlCode($html) and  header("Content-Type:text/html;charset=$code");
         $html = \Home\Library\HtmlDomReplace::AppendNav($html);
         (strtolower(trim($code))!='utf-8' && $code) and $html = mb_convert_encoding($html, $code,'utf-8');
-        echo $html;
+        exit($html);
     }
 
 

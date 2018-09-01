@@ -31,25 +31,17 @@ class ReplaceController extends HomeController {
 		$parseurl = parse_url($geturl);
 		$weburl = $parseurl['scheme'].'://'.$parseurl['host'].'/';//目标站域名
         $weburl2 = '//'.$parseurl['host'].'/';//目标站域名2,不规范的情况
-		/** 替换域名 */
-		$res = str_replace(array($weburl,$weburl2),$mydomain,$html);
+
+		$res = str_replace(array($weburl,$weburl2),$mydomain,$html);                                                        	/** 替换域名 */
 		$res = $this->replaceSubdomain($res);
-        //强制域名处理
-        $res = $this->urlConvert($res);
-        //url重写,替换url
-        $res = $this->urlRewrite($res);
-		//过滤标签
-		$res = $this->filterTags($res);
-		//站内外过滤
-		$res = $this->filterOthertags($res);
-        //同义词替换
-        $res = $this->similarReplace($res);
-		//字符串替换
-		$res = $this->stringReplace($res);
-		//正则替换
-		$res = $this->regexReplace($res);
-		//关键词内链
-//		$res = $this->linkwords($res);
+        $res = $this->urlConvert($res);                                                                                 //强制域名处理
+        $res = $this->urlRewrite($res);                                                                                  //url重写,替换url
+		$res = $this->filterTags($res);                                                                                  //过滤标签
+		$res = $this->filterOthertags($res);                                                                            //站内外过滤
+        $res = $this->similarReplace($res);                                                                              //同义词替换
+		$res = $this->stringReplace($res);                                                                              //字符串替换
+		$res = $this->regexReplace($res);                                                                               //正则替换
+//		$res = $this->linkwords($res);                                                                                  	//关键词内链
 		return $res;
 	}
 
@@ -78,14 +70,8 @@ class ReplaceController extends HomeController {
             preg_match_all('/href\s*=\s*("|\')(.*?)\1/is',$html,$match);
             $links = $match[0];
             $res = array_map(function($url){
-                $find = array(
-                    '.php?',
-                    '&',
-                );
-                $replace = array(
-                    '/php/',
-                    '/and/',
-                );
+                $find = array('.php?', '&',);
+                $replace = array('/php/', '/and/',);
                 $result = str_replace($find,$replace,$url);
                 return $result;
             },$links);
@@ -93,9 +79,8 @@ class ReplaceController extends HomeController {
             $replace  = array_diff($res,$links);
             $res = str_replace($find,$replace,$html);
             return $res;
-        }else{
-            return $html;
-        }
+        }else return $html;
+
     }
     /*
      * url重写
@@ -354,11 +339,7 @@ class ReplaceController extends HomeController {
 	public function filterIframe($html){
 		$regx = "/<iframe([^>]+>)(.+)?<\/iframe>/isU";
 		preg_match_all($regx, $html, $match);
-		if($match){
-			foreach($match[0] as $k=>$list){
-				$html = str_replace($list,'',$html);
-			}
-		}
+		if($match) foreach($match[0] as $k=>$list) $html = str_replace($list,'',$html);
 		return $html;
 	}
 
@@ -371,11 +352,7 @@ class ReplaceController extends HomeController {
 	public function filterScript($html){
 		$regx = "/<script([\s]+)?([^>]+)?>[\s\S]*?<\/script>/is";
 		preg_match_all($regx, $html, $match);
-		if($match){
-			foreach($match[0] as $k=>$list){
-				$html = str_replace($list,'',$html);
-			}
-		}
+		if($match) foreach($match[0] as $k=>$list) $html = str_replace($list,'',$html);
 		return $html;
 	}
 
@@ -385,11 +362,9 @@ class ReplaceController extends HomeController {
 		preg_match_all($regx, $html, $match);
 		$jsArr=array();
 		if($match){
-			foreach($match[1] as $k=>$vo){
-				if(preg_match('~src\s*=\s*(["|\']?)\s*([^"\'\s>\\\\]+)\s*\\1~i', $vo,$jsmatch)){
-					$jsArr[]=$jsmatch[2];
-				}
-			}
+			foreach($match[1] as $k=>$vo) preg_match('~src\s*=\s*(["|\']?)\s*([^"\'\s>\\\\]+)\s*\\1~i', $vo,$jsmatch) and $jsArr[]=$jsmatch[2];
+
+
 			$jsArr=array_unique($jsArr);
 		}
 		sort($jsArr);
@@ -406,9 +381,8 @@ class ReplaceController extends HomeController {
 					unset($match[1][$k]);
 					continue;
 				}
-				if(preg_match('~href\s*=\s*(["|\']?)\s*([^"\'\s>\\\\]+)\s*\\1~i', $vo,$hrefmatch)){
-					$cssHrefArr[]=$hrefmatch[2];
-				}
+			preg_match('~href\s*=\s*(["|\']?)\s*([^"\'\s>\\\\]+)\s*\\1~i', $vo,$hrefmatch) and  $cssHrefArr[]=$hrefmatch[2];
+
 			}
 			$cssHrefArr=array_unique($cssHrefArr);
 		}
@@ -417,14 +391,8 @@ class ReplaceController extends HomeController {
 	}
 	//强制过滤
     public function forcefilter($html){
-	    $find= array(
-	        'index.php?',
-            '&'
-        );
-	    $replace = array(
-	        'index/',
-            'and'
-        );
+	    $find= array('index.php?', '&');
+	    $replace = array('index/', 'and');
 	    $res = str_replace($find,$replace,$html);
 	    return $res;
     }

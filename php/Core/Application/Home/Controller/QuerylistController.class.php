@@ -60,9 +60,8 @@ class QuerylistController extends HomeController {
         if ($curl->error) {
             echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
             return false;
-        } else {
-            $html = $curl->response;
-        }
+        } else $html = $curl->response;
+
         $response =$curl->responseHeaders;
         $content_type = $response['content-type'];
         header('Content-Type: '.$content_type);
@@ -71,112 +70,115 @@ class QuerylistController extends HomeController {
     //下载css文件
     public function getFileCss($html){
         $config = R('Loadconfig/config');
-        $baseurl = $config['weburl'];	//目标站网址
-        $webconfig = R('Loadconfig/webconfig');
-        $myweburl = $webconfig['WEB_URL'];//当前网址
-        /*
-         * 获取页面中所有css链接
-        */
-        $data = QueryList::Query($html,array(
-            'css' => array('link','href')
-        ))->getData(function($item) use($baseurl,$myweburl){
-            $extension = get_extension($item['css']);
-            if($extension != 'css') return false;
-            $res = str_replace($myweburl,'',$baseurl.$item['css']);
-            return $res;
-        });
-        $data = array_unique(array_filter($data));
-
+        $target_url = $config['weburl'];
+        $this->getAllLink($data,$html);
         $multi_curl = new MultiCurl();
         $multi_curl->setUserAgent($this->userAgent);
-        //$multi_curl->setReferrer();
-        foreach($data as $vo){
-            $filename = str_replace(array($baseurl,'../','..\\'),'',$vo);
-            $filepath = './Runtime/Html/css/';
-            $randname = get_randname($filename,'css');//随机文件名
-            !is_dir($filepath) and  mkdir($filepath,0755,true);
-
-            $filename = $filepath . '/' . $randname;
-           !file_exists($filename) and  $multi_curl->addDownload($vo, $filename);
-
-        }
+        $this->loopDown($data,$target_url,$multi_curl);
         $multi_curl->start();
         return;
     }
-
-    public function getFileImg($html){
+    public function getAllLink(&$result, $html){
         $config = R('Loadconfig/config');
-        $baseurl = $config['weburl'];	//目标站网址
+        $target_url = $config['weburl'];	//目标站网址
         $webconfig = R('Loadconfig/webconfig');
-        $myweburl = $webconfig['WEB_URL'];//当前网址
-        /*
-         * 获取页面中所有图片链接
-         */
-        $data = QueryList::Query($html,array(
-            'img' => array('img','src')
-        ))->getData(function($item) use($baseurl,$myweburl){
-            $extension = get_extension($item['img']);
-            if(!in_array($extension,array('jpg','jpeg','gif','png'))) return false;
-            $res = str_replace($myweburl,'',$baseurl.$item['img']);
+        $cur_url = $webconfig['WEB_URL'];//当前网址
+        $result = QueryList::Query($html,array(
+            'css' => array('link','href')
+        ))->getData(function($item) use($target_url,$cur_url){
+            $extension = get_extension($item['css']);
+            if($extension != 'css') return false;
+            $res = str_replace($cur_url,'',$target_url.$item['css']);
             return $res;
         });
-        $data = array_unique(array_filter($data));
+        $result = array_unique(array_filter($result));
+    }
 
-        $multi_curl = new MultiCurl();
-        $multi_curl->setUserAgent($this->userAgent);
+    function loopDown($data,$target_url,&$multi_curl,$filepath='./Runtime/Html/css/'){
         foreach($data as $vo){
-            $filename = str_replace($baseurl,'',$vo);
-            $filepath = './Runtime/Html/img/';
-            $dir = pathinfo($filename,PATHINFO_DIRNAME);
-            $dir = $filepath.$dir;
-            if(!is_dir($dir)){
-                mkdir($dir,0755,true);
-            }
-            if(!file_exists($filepath .$filename)){
-                $multi_curl->addDownload($vo, $filepath . $filename);
+            $filename = str_replace(array($target_url,'../','..\\'),'',$vo);
+            $randname = get_randname($filename,'css');//随机文件名
+            !is_dir($filepath) and  mkdir($filepath,0755,true);
+            $filename = $filepath . '/' . $randname;
+            !file_exists($filename) and  $multi_curl->addDownload($vo, $filename);
+        }
+    }
+
+
+
+
+
+    public function getFileImg($html){
+        function getAllImage(&$data,$html,$target_url){
+            $webconfig = R('Loadconfig/webconfig');
+            $cur_url = $webconfig['WEB_URL'];//当前网址
+
+            $data = QueryList::Query($html,array(
+                'img' => array('img','src')
+            ))->getData(function($item) use($target_url,$cur_url){
+                $extension = get_extension($item['img']);
+                if(!in_array($extension,array('jpg','jpeg','gif','png'))) return false;
+                $res = str_replace($cur_url,'',$target_url.$item['img']);
+                return $res;
+            });
+            $data = array_unique(array_filter($data));
+        }
+        function loopDownPic($data,$target_url,&$multi_curl){
+            foreach($data as $vo){
+                $filename = str_replace($target_url,'',$vo);
+                $filepath = './Runtime/Html/img/';
+                $dir = pathinfo($filename,PATHINFO_DIRNAME);
+                $dir = $filepath.$dir;
+                !is_dir($dir) and  mkdir($dir,0755,true);
+
+                !file_exists($filepath .$filename) and  $multi_curl->addDownload($vo, $filepath . $filename);
             }
         }
+        $config = R('Loadconfig/config');
+        $target_url = $config['weburl'];	//目标站网址
+        $data=[];
+        getAllImage($data,$html,$target_url);
+        $multi_curl = new MultiCurl();
+        $multi_curl->setUserAgent($this->userAgent);
+        loopDownPic($data,$target_url,$multi_curl);
         $multi_curl->start();
         return;
     }
 
     //下载css文件
     public function getFileJs($html){
+        function getAllJs(&$data,$html,$target_url){
+            $webconfig = R('Loadconfig/webconfig');
+            $cur_url = $webconfig['WEB_URL'];//当前网址
+            $data = QueryList::Query($html,['js' => array('script','src')])->getData(function($item) use($target_url,$cur_url){
+                $extension = get_extension($item['js']);
+                if($extension != 'js') return false;
+                $res = str_replace($cur_url,'',$target_url.$item['js']);
+                return $res;
+            });
+            $data = array_unique(array_filter($data));
+        }
+        function loopDownJs($data,$target_url,&$multi_curl){
+            foreach($data as $vo){
+                $filename = str_replace(array($target_url,'../','..\\'),'',$vo);
+                $filepath = './Runtime/Html/js/';
+                $randname = get_randname($filename,'js');
+                !is_dir($filepath) and  mkdir($filepath,0755,true);
+                $filename = $filepath . '/' . $randname;
+                !file_exists($filename) and  $multi_curl->addDownload($vo,$filename );
+            }
+        }
         $config = R('Loadconfig/config');
-        $baseurl = $config['weburl'];	//目标站网址
-        $webconfig = R('Loadconfig/webconfig');
-        $myweburl = $webconfig['WEB_URL'];//当前网址
-        /*
-         * 获取页面中所有js链接
-        */
-        $data = QueryList::Query($html,array(
-            'js' => array('script','src')
-        ))->getData(function($item) use($baseurl,$myweburl){
-            $extension = get_extension($item['js']);
-            if($extension != 'js') return false;
-            $res = str_replace($myweburl,'',$baseurl.$item['js']);
-            return $res;
-        });
-        $data = array_unique(array_filter($data));
-
+        $target_url = $config['weburl'];	//目标站网址
+        $data=[];
+        getAllJs($data,$html,$target_url);
         $multi_curl = new MultiCurl();
         $multi_curl->setUserAgent($this->userAgent);
-        //$multi_curl->setReferrer();
-        foreach($data as $vo){
-            $filename = str_replace(array($baseurl,'../','..\\'),'',$vo);
-            $filepath = './Runtime/Html/js/';
-            $randname = get_randname($filename,'js');//随机文件名
-
-            if(!is_dir($filepath)){
-                mkdir($filepath,0755,true);
-            }
-            $filename = $filepath . '/' . $randname;
-            if(!file_exists($filename)) $multi_curl->addDownload($vo,$filename );
-
-        }
+        loopDownJs($data,$target_url,$multi_curl);
         $multi_curl->start();
         return;
     }
+
 
 
 

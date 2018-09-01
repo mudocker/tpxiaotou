@@ -43,9 +43,7 @@ class HomeController extends Controller {
      * @param type $html 页面内容
      */
     protected static function getHtmlCode($html){
-        if (preg_match('/<meta.*charset.?=[ |"]?([^ ]*).?".*>/i', $html,$matches)) {
-                return $matches[1];
-        }
+        if (preg_match('/<meta.*charset.?=[ |"]?([^ ]*).?".*>/i', $html,$matches)) return $matches[1];
         return false;
     }
 

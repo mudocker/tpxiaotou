@@ -107,9 +107,8 @@ class CaijiController extends AdminController {
         // 获取详细数据 
         $Document = D('CaijiRule');
         $data = $Document->where("id=$id")->find();
-        if(!$data){
-            $this->error($Document->getError());
-        }
+        if(!$data) $this->error($Document->getError());
+
 
 		$model_id = $this->model_id;
         // 获取当前的模型信息

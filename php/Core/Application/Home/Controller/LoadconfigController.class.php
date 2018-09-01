@@ -26,7 +26,7 @@ class LoadconfigController extends HomeController {
 	/** 获取采集规则 **/
 	public function config(){
 		$dir = './Runtime/Config/';
-		if(!is_dir($dir)) mkdir($dir,0755,true);		
+		!is_dir($dir) and  mkdir($dir,0755,true);
 		$file = $dir.'cjconfig.php';
 		$res = include($file);
 		if(!$res || !is_array($res)){
@@ -34,8 +34,8 @@ class LoadconfigController extends HomeController {
 			$info = M('CaijiRule')->where("id=$rule_id")->find();
 			$str = '<?php'.PHP_EOL.'/*采集规则配置文件*/'.PHP_EOL.'return array('.PHP_EOL;
 			foreach($info as $k=>$v){
-				$v = addcslashes($v,"\\");//转义特殊符号，避免冲突
-				$v = addcslashes($v,"'");//转义特殊符号，避免冲突
+				$v = addcslashes($v,"\\");
+				$v = addcslashes($v,"'");
 				$str .= " '".$k."' => '".trim($v)."',".PHP_EOL;
 			}
 			$str .= ');';

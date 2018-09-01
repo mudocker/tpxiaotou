@@ -1,5 +1,8 @@
 <?php
 namespace Home\Controller;
+use DOMDocument;
+use DOMXPath;
+use FluentDOM;
 use Home\Controller\iq\html;
 use OT\DataDictionary;
 use \Curl\curl;
@@ -8,9 +11,8 @@ use \Curl\curl;
  * 主要获取首页聚合数据
  * 使用querylist框架和php-curl-class扩展包
  */
-class IndexQueryController extends HomeController
-{
-    public function _initialize(){
+class IndexQueryController extends HomeController{
+     function _initialize(){
         $this->_config = R('Loadconfig/config');
     }
 
@@ -24,9 +26,8 @@ class IndexQueryController extends HomeController
         if ($parameter) {
             $request_uri = $_SERVER['REQUEST_URI'];
             $geturl = $weburl . $request_uri;
-        } else {
-            $geturl = $weburl;
-        }
+        } else $geturl = $weburl;
+
         $html = $this->html($weburl,$request_uri);
     }
     //获取页面内容

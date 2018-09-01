@@ -8,6 +8,8 @@
 
 namespace Home\Library;
 
+use FluentDOM\DOM\Element;
+
 /**
  * Xpath 替换 Html内容  实现 镜像模板动态内容替换
  *
@@ -15,28 +17,16 @@ namespace Home\Library;
  */
 class HtmlDomReplace {
     
-    /**
-     *  替换导航
-     * xpath_nav_mode] => 1 追加 2 替换
-     * [xpath_nav_replace] =>
-     *  [xpath_nav_block] => //div[@class='header']/div[@class='nav']/ul 
-     * [xpath_nav_template_mode] => 1
-     *  [xpath_nav_type_template] =>
-<{title}><{datetime}>
-        [xpath_nav_pos_template] => 
-     * [xpath_nav_clean_template] => 
-     * [xpath_nav_article_category] 
-     */
+
     public static function AppendNav($html){
         $_config = R('Loadconfig/config');
         if($_config['xpath_enable'] != 1 || $_config['xpath_nav_article_category']=='') return $html;
-
-        $document = \FluentDOM::load( $html,  'text/html' ,[\FluentDOM\Loader\Options::ENCODING => 'gb2312',\FluentDOM\Loader\Options::FORCE_ENCODING => 'gb2312']); //,[\FluentDOM\Loader\Options::ENCODING => 'gb2312',\FluentDOM\Loader\Options::FORCE_ENCODING => 'gb2312']
-        
-        if(!self::_documentAppendNav($document,$_config)){
-            return $html;
-        }
-        return  $document->saveHTML()?:$html;
+        $options=  [
+            \FluentDOM\Loader\Options::ENCODING => 'gb2312',
+            \FluentDOM\Loader\Options::FORCE_ENCODING => 'gb2312'
+        ];
+        $document = \FluentDOM::load( $html, 'text/html' , $options );
+        return !self::_documentAppendNav($document,$_config)? $html: $document->saveHTML()?:$html;
     }
     
     public static function _documentAppendNav(&$document,$_config){
@@ -44,18 +34,17 @@ class HtmlDomReplace {
         if(!$navs->length)  return false;
         $nav = $navs[0];
         switch($_config['xpath_nav_template_mode']){
-            case 1: // 1:输入模板
+            case 1:
                 $nav_elements = self::createHtmlNavElements($nav,$_config['xpath_nav_type_template'],$_config['xpath_nav_article_category']);
                 break;
-            case 2: //2:定位模板
+            case 2:
                 $nav_elements = self::createXapthNavElements($nav,$_config['xpath_nav_pos_template'],$_config['xpath_nav_clean_template'],$_config['xpath_nav_article_category']);
                 break;
             default:
                 return false;
         }
-        if($_config['xpath_nav_mode'] == 1){  // 追加
-            $nav->append($nav_elements);  //            $nav->appendChild($nav_elements[0]);
-        }elseif($_config['xpath_nav_mode'] == 2){ // 替换
+        if($_config['xpath_nav_mode'] == 1) $nav->append($nav_elements);
+        elseif($_config['xpath_nav_mode'] == 2){
             $replace_index = explode(',', $_config['xpath_nav_replace']);
             $lis = $nav('./*');
             foreach($replace_index as $index){
@@ -65,10 +54,10 @@ class HtmlDomReplace {
         }
         return true;
     }
-    
+
     /**
      * 根据输入的html模板生成导航节点
-     * @param Element $nav 导航块节点 
+     * @param Element $nav 导航块节点
      * @param string $html 导航html模板
      * @return array[Element]
      */
@@ -95,15 +84,13 @@ class HtmlDomReplace {
         $result = [];
         $categorys = D('Category')->field(['name','id','title'])->where(['id in ('.$category_id.')'])->select();
         $nav_rows = $nav($temp_xpath);
-        if(!$nav_rows->length)
-            return [];  // cloneNode
+        if(!$nav_rows->length) return [];
         $nav_row = $nav_rows[$nav_rows->length-1];
-        // 清理多余内容
+
         if($clean_xpath){
             $clean_nodes = $nav_row($clean_xpath);
-            foreach($clean_nodes as $clean_node){
-                $clean_node->remove();
-            }
+            foreach($clean_nodes as $clean_node) $clean_node->remove();
+
         }
         foreach($categorys as $category){
             $newNav = $nav_row->cloneNode(true);
@@ -124,43 +111,29 @@ class HtmlDomReplace {
      */
     public static function getXpathHtmlCache($page_type,$web_id,$url){
         $file = RUNTIME_PATH."Xpath/$web_id/$page_type.html";
-        if(is_file($file))
-            return $file;
+        if(is_file($file)) return $file;
         else{
             $path = dirname($file);
-            if(!is_dir($path))
-                mkdir($path,0777,true);
+           !is_dir($path) and  mkdir($path,0777,true);
             $html = file_get_contents($url);
-            if($html && file_put_contents($file, $html)){
-                return $file;
-            }
-            return false;
+            return  $html && file_put_contents($file, $html)?  $file: false;
         }
     }
     
-    /**
-     * 根据xpath 生成文章列表页
-     * @param type $category
-     * @see img br input 等标签 <img /> 要有斜杠 且要对称
-     * @todo 尽量不要用 带有<>的标签 
-     */
+
     public static function XpathArticleList($category,$p){
         $_config = R('Loadconfig/config');
-        if($_config['xpath_enable'] != 1 || $_config['xpath_nav_article_category']==''){
-            return '';
-        }
+        if($_config['xpath_enable'] != 1 || $_config['xpath_nav_article_category']=='') return '';
+
         $file =  self::getXpathHtmlCache('list',$_config['id'],$_config['xpath_list_template']); 
         $document =  \FluentDOM::load( $file,  'text/html',[\FluentDOM\Loader\Options::ALLOW_FILE => TRUE]);
-        if(!self::_documentAppendNav($document,$_config)){
-            return false;
-        }
+        if(!self::_documentAppendNav($document,$_config)) return false;
+
         $listDoms = $document($_config['xpath_list_block']);
-        if(!$listDoms->length)
-            return false;
+        if(!$listDoms->length) return false;
         $listDom = $listDoms[0];
-        foreach($listDom('./*') as $li){
-            $li->remove();
-        }
+        foreach($listDom('./*') as $li) $li->remove();
+
         $DocumentModel = D('Document');
         $rows = $DocumentModel->page($p, $category['list_row'])->lists($category['id']);
         foreach($rows as $row){
@@ -183,17 +156,13 @@ class HtmlDomReplace {
             $total =   $DocumentModel->where(['category_id'=>$category['id']])->count();
             $pageDoms = $document($_config['xpath_list_pages']);
             if($pageDoms->length){
-                $page = new \Think\Page($total, $category['list_row'], $REQUEST); 
-                if($total>$listRows){
-                    $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
-                }
+
+                $page = new \Think\Page($total, $category['list_row'], $_REQUEST);
+                if($total>$listRows) $page->setConfig('theme','%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END% %HEADER%');
+
                 $p =$page->show();
                 $pageDom = $pageDoms[0];
                 $pageDom->nodeValue = '';
-                //$fd = new \FluentDOM\Nodes($p,  'text/html');
-                //echo $fd;exit;
-                //echo $fd->saveHTML();exit;
-                //\FluentDOM::load( $p,  'text/html') 
                 $pageDom->append(\FluentDOM::load( $p,  'text/html') );
             }
         }
@@ -213,9 +182,8 @@ class HtmlDomReplace {
         $fields =  explode("\n",$_config['xpath_article_fields']);
         foreach($fields as $field){
             $pos = strpos($field,':' );
-            if( $pos === false ||  $pos===0){
-                continue;
-            }
+            if( $pos === false ||  $pos===0) continue;
+
             $tag = trim(mb_substr($field, 0,$pos));
             $xpath = mb_substr($field, $pos+1);
             switch ($tag){
